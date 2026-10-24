@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isTeacher() {
+      return isSignedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() == 'gjwjddms208@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    function isValidSubmission(data) {
+      return data.keys().hasAll(['gradeClass', 'studentNo', 'teamNo', 'name', 'reflection', 'createdAt'])
+        && data.gradeClass is string && data.gradeClass.size() <= 50
+        && data.studentNo is string && data.studentNo.size() <= 10
+        && data.name is string && data.name.size() <= 50
+        && data.teamNo is number
+        && data.reflection is map
+        && data.createdAt != null;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Student Submissions Collection
+    match /submissions/{submissionId} {
+      // 1. Read (get & list): Only authorized teacher (gjwjddms208@gmail.com) can access
+      allow get, list: if isTeacher();
+
+      // 2. Create: Students (including unauthenticated) can submit their work
+      allow create: if isValidId(submissionId) && isValidSubmission(request.resource.data);
+
+      // 3. Update & Delete: Strictly restricted to the authorized teacher
+      allow update, delete: if isTeacher();
+    }
+  }
+}

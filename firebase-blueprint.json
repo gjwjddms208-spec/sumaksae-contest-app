@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "Submission": {
+      "title": "Submission",
+      "description": "Student math exploration submission and reflection record",
+      "type": "object",
+      "properties": {
+        "gradeClass": {
+          "type": "string",
+          "description": "Student grade and class (e.g. 3-1)"
+        },
+        "studentNo": {
+          "type": "string",
+          "description": "Student attendance number"
+        },
+        "teamNo": {
+          "type": "number",
+          "description": "Team group number (1-6)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Student name"
+        },
+        "drawingData": {
+          "type": "object",
+          "description": "Tile geometric restoration drawing data"
+        },
+        "quizData": {
+          "type": "object",
+          "description": "Calculation quiz answer and verification"
+        },
+        "reflection": {
+          "type": "object",
+          "description": "Three-part reflection essay (learned, felt, connected)"
+        },
+        "evaluation": {
+          "type": "object",
+          "description": "Teacher rubric 4-area grade evaluation"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submission timestamp"
+        }
+      },
+      "required": ["gradeClass", "studentNo", "teamNo", "name", "reflection", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/submissions/{submissionId}": {
+      "schema": {
+        "$ref": "#/entities/Submission"
+      },
+      "description": "Student tile restoration submissions and teacher rubric evaluations"
+    }
+  }
+}
